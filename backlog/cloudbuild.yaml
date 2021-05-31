@@ -1,0 +1,12 @@
+steps:
+  - name: "docker/compose:1.19.0"
+    args: ["up", "-d"]
+
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["tag", "workspace_streamlit:latest", "gcr.io/$PROJECT_ID/streamlit"]
+
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["tag", "workspace_tfserving:latest", "gcr.io/$PROJECT_ID/tfserving"]
+
+# push to Container Registry
+images: ["gcr.io/$PROJECT_ID/streamlit", "gcr.io/$PROJECT_ID/tfserving"]

@@ -7,7 +7,6 @@ import streamlit as st
 
 
 REST_URL = "http://localhost:8501/v1/models/monet_gen:predict"
-# REST_URL = "http://0.0.0.0:8501/v1/models/monet_gen:predict"
 
 st.title("If Monet loved dogs more 🐕")
 st.header("TensorFlow Serving + Streamlit")

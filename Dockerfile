@@ -30,14 +30,14 @@ ENV PATH="/home/venv/bin:$PATH"
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 RUN update-alternatives --install /usr/local/bin/pip pip /usr/local/bin/pip3 1
 
-# Creates a new Ubuntu user
+# Create a new Ubuntu user
 RUN useradd -m model-server
 
-# Upgrades PIP before proceeding and installs setuptools
+# Upgrade PIP and installs setuptools
 RUN pip install pip --upgrade
 RUN pip install -U pip setuptools
 
-# Move the requirements.txt file to the Docker image
+# Move the requirements.txt file to the container
 RUN mkdir /tfserving_streamlit
 COPY . /tfserving_streamlit
 WORKDIR /tfserving_streamlit
@@ -48,7 +48,7 @@ RUN echo "deb [arch=amd64] http://storage.googleapis.com/tensorflow-serving-apt 
     curl https://storage.googleapis.com/tensorflow-serving-apt/tensorflow-serving.release.pub.gpg | apt-key add -
 RUN apt-get update && apt-get install tensorflow-model-server -y
 
-# Downloads the TensorFlow trained model
+# Download the trained model(in SavedModel format)
 RUN cd /home \
     && wget -nv "https://www.dropbox.com/s/twjjatywbr0wyat/monet_gen.zip" \
     && unzip monet_gen.zip \
@@ -56,31 +56,28 @@ RUN cd /home \
     && mkdir /home/saved_models \
     && mv monet_gen /home/saved_models/
 
-# install tini
+# Install tini
 ENV TINI_VERSION v0.19.0
-# set proper right on /tini 
+# Set proper ownership on /tini 
 ADD --chown=model-server https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static /tini
 RUN chmod +x /tini
-# set permission for the entrypoint.sh
+# Set permission for the entrypoint.sh
 RUN chmod +x /tfserving_streamlit/entrypoint.sh
 
-# Sets the proper rights to the /home/saved_models dir and the created Python env
+# Set the proper rights to the /home/saved_models dir and the created Python env
 RUN chown -R model-server /home/saved_models \
     && chown -R model-server /home/venv
 
-# Creates a directory for the logs and sets permissions to it
+# Create a directory for the logs and set permissions to it
 RUN mkdir /home/logs \
     && chown -R model-server /home/logs
 
-# Defines the model_path environment variable and the model name
+# Define the model_path environment variable and the model name
 ENV MODEL_PATH=/home/saved_models/monet_gen
 ENV MODEL_NAME=monet_gen
 
 ENV REST_PORT=8501
 EXPOSE $REST_PORT
  
-# Prepare the CMD that will be run on docker run
 USER model-server
-# CMD tensorflow_model_server --port=$GRPC_PORT --rest_api_port=$PORT --model_name=$MODEL_NAME --model_base_path=$MODEL_PATH >> /home/logs/server.log
-
 ENTRYPOINT ["/tini", "--", "/tfserving_streamlit/entrypoint.sh"]

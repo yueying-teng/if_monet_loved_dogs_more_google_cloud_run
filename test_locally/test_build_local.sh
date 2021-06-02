@@ -1,0 +1,1 @@
+docker build . -f Dockerfile.local -t monet_tfserving_streamlit

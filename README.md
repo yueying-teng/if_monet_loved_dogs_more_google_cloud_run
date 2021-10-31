@@ -6,7 +6,7 @@
 - ### [CycleGAN model training](https://github.com/yueying-teng/streamlit_tfserving_if_monet_loved_dogs_more)
 - ### [tf serving with streamlit ui locally (docker-compose)](https://github.com/yueying-teng/streamlit_tfserving_if_monet_loved_dogs_more)
 
-### 💻 Play with the app [here]().
+### 💻 Play with the app [here](https://monet-tfserving-streamlit.herokuapp.com/).
 
 <br /> 
 
